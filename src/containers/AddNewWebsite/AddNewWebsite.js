@@ -8,11 +8,13 @@ import endpoint from "api/endpoint";
 import { useSelector, useDispatch } from "react-redux";
 import apiHandler from "api";
 import { setWebsiteUserData } from "features/agency/websiteUserSlice";
+import { showWebsiteUser } from "features/common/commonSlice";
 
-const AddNewWebsite = ( ) => {
+
+const AddNewWebsite = () => {
   const dispatch = useDispatch();
   const { userData, authToken } = useSelector((state) => state.login);
-  const [modalVisible, setModalVisible] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
   const [isPhoto, setPhoValidate] = useState(false);
   const [sendDailyData, setSendDaily] = useState(false);
   const [userTypeList, setUserTypeList] = useState([]);
@@ -21,13 +23,23 @@ const AddNewWebsite = ( ) => {
   const handleAlertCancel = () => { setAlertModalVisible(false); };
   const photoValidator = (value) => { setPhoValidate(value.target.checked) };
   const sendDaily = (value) => { setSendDaily(value.target.checked) };
-  const handleCancel = () => { setModalVisible(false); };
-  const { register, getValues, reset, handleSubmit, formState: {errors} } = useForm();
+  const handleCancel = () => { dispatch(showWebsiteUser(false)); };
+  const { register, getValues, setValue, reset, handleSubmit, formState: {errors} } = useForm();
+  const { showWebModal } = useSelector((state) => state.common);
+  const editList = useSelector( (state) => state.editUserData.editDataObj );
+
+  const [alertList, setAlertList] = useState([{
+    key: '1',
+    name: <Checkbox>Select all</Checkbox>,
+    watch: <Checkbox>Select all</Checkbox>,
+    gps: <Checkbox>Select all</Checkbox>,
+    filter: <Checkbox>Select all</Checkbox>,
+  }]);
 
   useEffect(() => {
     fetchDetails();
-    getTimezone();
   }, [setUserTypeList]);
+
 
   const fetchDetails = () => { 
     apiHandler({
@@ -35,8 +47,8 @@ const AddNewWebsite = ( ) => {
       authToken,
     }).then((result) => {
       setUserTypeList(result.data);
-      // console.log(result.data)
     });
+    getTimezone();
   }
 
   const getTimezone = () => {
@@ -46,69 +58,144 @@ const AddNewWebsite = ( ) => {
     }).then((result) => {
       getTimeZoneList(result.data);
     });
+
+    apiHandler({
+      url: `${endpoint.AVAILABLE_EVENT_TYPES}`,
+      authToken,
+    }).then((result) => {
+      if(result){
+        if(result?.data.length > 0){
+          let finalData = [];
+          result.data.forEach((el,i)=>{
+            let make = {};
+            make["key"] = (i+2);
+            result.data.forEach((row,i)=>{
+              if(row.deviceTypeName == "Breathalyzer") {
+                make.name= <Checkbox>{row.name}</Checkbox>
+              }
+              if(row.deviceTypeName == "Watch") {
+                make.name= <Checkbox>{row.name}</Checkbox>
+              }
+              if(row.deviceTypeName == "GPS") {
+                make.name= <Checkbox>{row.name}</Checkbox>
+              }
+              if(row.deviceTypeName == "Breathalyzer") {
+                make.name= <Checkbox>{row.name}</Checkbox>
+              }
+            });
+            finalData.push(make);
+          })
+          setAlertList(finalData);
+        }
+      }
+    });
   }
 
-  // const onSubmit = data => console.log(data);
-  // const timeZone = register("timeZone", { required: true });
-  // const userType = register("userType", { required: true });
-  // const webStatus = register("webStatus", { required: false });
-  // const photoValidator = register("photoValidator", { required: false });
-  
-
   const onSubmit = async () => {
-    const values = getValues(); 
-    const filterName = userTypeList.filter(x => values.userType == x.id);
-    if(filterName.length > 0){
-      // console.log(values)
-      let agency = [];
-      if(userData?.agencies.length > 0){
-        userData?.agencies.map((list, i) =>  {
-          agency.push({id: list.id});
-        })
-      }
-
-      await apiHandler({
-        url: '/admin/user',
-        method: "POST",
-        data: {
-          "firstName": values.firstname,
-          "middleName": values.middlename,
-          "lastName": values.lastname,
-          "timeZone": values.timezone,
-          "email": values.email,
-          "notifyViaEmail": false,
-          "notifyViaMobilePhoneText": true,
-          "notifyViaAltPhoneText": false,
-          "sendDailyReports": sendDailyData,
-          // "id": activeParticipantId,
-          "websiteUserType": {
-            "id": parseInt(values.userType),
-            "name": filterName[0].name
+    if(showWebModal == false){ 
+      const values = getValues(); 
+      const filterName = userTypeList.filter(x => values.userType == x.id);
+      if(filterName.length > 0){
+        // console.log(values)
+        let agency = [];
+        if(userData?.agencies.length > 0){
+          userData?.agencies.map((list, i) =>  {
+            agency.push({id: list.id});
+          })
+        }
+  
+        await apiHandler({
+          url: '/admin/user',
+          method: "POST",
+          data: {
+            "firstName": values.firstname,
+            "middleName": values.middlename,
+            "lastName": values.lastname,
+            "timeZone": values.timezone,
+            "email": values.email,
+            "notifyViaEmail": false,
+            "notifyViaMobilePhoneText": true,
+            "notifyViaAltPhoneText": false,
+            "sendDailyReports": sendDailyData,
+            "websiteUserType": {
+              "id": parseInt(values.userType),
+              "name": filterName[0].name
+            },
+            "status": values.webStatus,
+            "isPhotoValidator": isPhoto,
+            "agencies": agency,
+            "mobilePhone": "("+values.phone1 +")-"+ values.phone2 +"-"+ values.phone3,
+            "altPhone": "("+values.alphone1 +")-"+ values.alphone2 +"-"+ values.alphone3,
           },
-          "status": values.webStatus,
-          "isPhotoValidator": isPhoto,
-          "agencies": agency,
-          "mobilePhone": "("+values.phone1 +")-"+ values.phone2 +"-"+ values.phone3,
-          "altPhone": "("+values.alphone1 +")-"+ values.alphone2 +"-"+ values.alphone3,
-        },
-        authToken: authToken,
-      }).then(async (result) => {
-        setModalVisible(false);
-        if(result.data.id != undefined){
-          console.log(result.data)
-          getUpdateWebsiteUser();
-        }
-        else{
-          notification.info({
-            description: result.data.message,
-            placement: "topRight",
-            duration: 5,
-          });
-        }
-        reset();
-      });
+          authToken: authToken,
+        }).then(async (result) => {
+          if(result?.data?.id != undefined){
+            getUpdateWebsiteUser();
+            dispatch(showWebsiteUser(false));
+            reset();
+          }
+          else{
+            notification.info({
+              description: result?.data?.message,
+              placement: "topRight",
+              duration: 5,
+            });
+          }
+        });
+      }
+    }
+    else{
+      updateWebsite();
     }
   };
+
+  const updateWebsite = async () => {
+    const values = getValues(); 
+    let agency = [];
+    if(userData?.agencies.length > 0){
+      userData?.agencies.map((list, i) =>  {
+        agency.push({id: list.id});
+      })
+    }
+
+    await apiHandler({
+      url: '/admin/user',
+      method: "POST",
+      data: {
+        "id": editList?.id,
+        "firstName": values.firstname,
+        "middleName": values.middlename,
+        "lastName": values.lastname,
+        "timeZone": values.timezone,
+        "email": values.email,
+        "notifyViaEmail": false,
+        "notifyViaMobilePhoneText": true,
+        "notifyViaAltPhoneText": false,
+        "sendDailyReports": sendDailyData,
+        "websiteUserType": editList?.websiteUserType,
+        "status": values.webStatus,
+        "isPhotoValidator": isPhoto,
+        "agencies": agency,
+        "mobilePhone": "("+values.phone1 +")-"+ values.phone2 +"-"+ values.phone3,
+        "altPhone": "("+values.alphone1 +")-"+ values.alphone2 +"-"+ values.alphone3,
+      },
+      authToken: authToken,
+    }).then(async (result) => {
+      if(result?.data?.id != undefined){
+        getUpdateWebsiteUser();
+        dispatch(showWebsiteUser(false));
+        reset();
+      }
+      else{
+        notification.info({
+          description: result?.data?.message,
+          placement: "topRight",
+          duration: 5,
+        });
+      }
+    });
+  };
+
 
   const getUpdateWebsiteUser = async () => {
     let activeId = '';
@@ -124,7 +211,6 @@ const AddNewWebsite = ( ) => {
         placement: "topRight",
         duration: 5,
       });
-
       if(result){
         if(result?.data?.websiteUsers.length > 0){
           dispatch(setWebsiteUserData(result.data.websiteUsers.map((row,i) =>({
@@ -210,23 +296,47 @@ const AddNewWebsite = ( ) => {
   ];
 
 
+  if(showWebModal == true){
+    // fetchDetails();
+    // console.log(editList);
+    setValue("firstname", editList?.firstName);
+    setValue("middlename", editList?.middleName);
+    setValue("lastname", editList?.lastName);
+    setValue("timezone", editList?.timeZone);
+    setValue("email", editList?.email);
+    // setValue("phone1", '');
+    // setValue("phone2", '');
+    // setValue("phone3", '');
+    // setValue("alphone1", '');
+    // setValue("alphone2", '');
+    // setValue("alphone3", '');
+    setValue("userType", editList?.role);
+    // setValue("newpassword", editList?.firstName);
+    setValue("webStatus", editList?.status);
+    // setSendDaily(editList?.sendDailyReports);
+    // setPhoValidate(editList?.isPhotoValidator);
+  }
+
   return (
     <>
 
-      <Button type="primary" style={{marginTop: '1rem'}} onClick={() => { fetchDetails(); setModalVisible(true);}}>
+      <Button type="primary" style={{marginTop: '1rem'}} onClick={() => { fetchDetails(); dispatch(showWebsiteUser(true));}}>
        <PlusCircleOutlined /> New Website User
       </Button>
 
-      <StyledModal visible={modalVisible}  width={800} onCancel={(e) => { setModalVisible(false)}}
+      <StyledModal visible={showWebModal}  width={800} onCancel={(e) => { dispatch(showWebsiteUser(false)); }}
       title={[
         <Row>
-          <Col md={24} style={{ fontWeight: 'bold' }}>Add New Website User</Col>
+          {showWebModal == true ?  (
+          <Col md={24} style={{ fontWeight: 'bold' }}>Edit Website User</Col>
+          ): (<Col md={24} style={{ fontWeight: 'bold' }}>Add New Website User</Col>)}
         </Row>
       ]}
         footer={[
           <Button key="back" onClick={handleCancel}>
             Close
           </Button>,
+          
           <Button key="save" type="primary" onClick={(e) => {handleSubmit(onSubmit)(e).catch(() => {});}} className="ant-btn ant-btn-primary">
             Save
           </Button>,
@@ -330,19 +440,9 @@ const AddNewWebsite = ( ) => {
           <Row style={{ marginTop: '1.3rem' }}>
             <Col md={24}>
               <label><span className='required'>*</span> Webiste User Type</label>
-              {/* <Select placeholder="Select user" {...userType}
-                onChange={(e) => {
-                  userType.onChange(e);
-                  clearErrors("userType");
-                }} style={{ width: '98%',borderRadius: '0px' }} >
-                <Option value="Super User [admin]">Super User [admin]</Option>
-                <Option value="Zone 2">Home Zone 2</Option>
-              </Select>
-              {errors?.userType?.type === 'required' && <span className='error'> User type is required</span>} */}
-
               <select {...register("userType", { required: true})}>
                 <option value="">Select user type</option>
-                { userTypeList.map(list => <option value={list.id} key={list.id} >{list.name}</option>) }
+                { userTypeList.map(list => <option value={list.name} key={list.id} >{list.name}</option>) }
               </select>
               {errors?.userType?.type === 'required' && <span className='error'> User type is required</span>}
             </Col>
@@ -356,12 +456,6 @@ const AddNewWebsite = ( ) => {
             </Col>
             <Col md={8} style={{ marginLeft: '15px' }}>
               <label>Status</label>
-              {/* <Select placeholder="Select status" {...webStatus}
-                onChange={(e) => {
-                  webStatus.onChange(e);
-                }} style={{ width: '98%',borderRadius: '0px' }} >
-                <Option value="active">Active</Option>
-              </Select> */}
               <select {...register("webStatus")}>
                 <option value="">Select status</option>
                 <option value="ACTIVE">Active</option>

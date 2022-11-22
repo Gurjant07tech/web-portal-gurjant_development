@@ -18,7 +18,8 @@ import { EditOutlined,PlusCircleOutlined } from '@ant-design/icons';
 import EditAlters from "containers/EditAlerts/EditAlerts";
 import { useForm } from "react-hook-form";
 import { setWebsiteUserData } from "features/agency/websiteUserSlice";
-
+import { seteditUserData } from "features/agency/editUserSlice";
+import { showWebsiteUser } from "features/common/commonSlice";
 
 export const StyledSpace = styled(Space)`
   display: flex;
@@ -30,7 +31,6 @@ export const StyledSpace = styled(Space)`
 `;
 
 const Agency = () => {
-  // All form controls
   const dispatch = useDispatch();
   const { register, getValues, setValue, reset, handleSubmit, formState: {errors} } = useForm({ defaultValues: { displayNext: false } });
   const [agencyList, getAgencyData] = useState([]);
@@ -39,14 +39,13 @@ const Agency = () => {
   const [timezoneList, getTimeZoneList] = useState([]);
   const [availableNotificationLists, getavailableNotificationLists] = useState([]);
   const { authToken, userData } = useSelector((state) => state.login);
-  // const agencies = useSelector((state) => state.common.agencies);
   const [contactList, setContact] = useState([]);
   const [deviceList, setDevice] = useState([]);
   const webloadData = useSelector( (state) => state.websiteUserData.websiteDataObj );
+  dispatch(showWebsiteUser(false));
 
   // On filter change
   const onFilterChange = (e) => {
-    // console.log(`checked = ${e.target.value}`);
     if(e.target.checked == true){
       getSavedAgency(e.target.value);
     }
@@ -208,19 +207,26 @@ const Agency = () => {
 
   const getContactList = async (agencyId) => {
     apiHandler({
-      url: `${endpoint.AVAILABLE_EVENT_TYPES}`,
+      url: `${endpoint.AVAILABLE_CONTACTS}/${agencyId}`,
       authToken,
     }).then((result) => {
-      // if(result){
-      //   if(result?.data.length > 0){
-      //     setContact(  result.data.map((row,i) =>({
-      //       key: (i+1),
-      //       name: row.firstName +" "+row.lastName,
-      //       preferred: row.email,
-      //       role: row.role,
-      //     })));
-      //   }
-      // }
+      if(result){
+        if(result?.data.length > 0){
+          setContact(  result.data.map((row,i) =>({
+            key: (i+1),
+            name: row.firstName +" "+row.lastName,
+            preferred: row.email,
+            role: row.role,
+          })));
+        }
+      }
+    });
+
+    apiHandler({
+      url: `${endpoint.USER}`,
+      authToken,
+    }).then((result) => {
+      
     });
   }
 
@@ -327,7 +333,6 @@ const Agency = () => {
         },
         authToken: authToken,
       }).then(async (result) => {
-        reset();
         if(result?.data?.id){
           notification.success({
             description: "Agency created successfully",
@@ -336,6 +341,7 @@ const Agency = () => {
           });
           getAgeyList();
           getSavedAgency(result?.data?.id)
+          reset();
         }
         else{
           notification.info({
@@ -365,7 +371,10 @@ const Agency = () => {
     getAgencyData([]);
   }
 
-  
+  const getEventData = (data,index)=> {
+    console.log(agencyList?.websiteUsers[index]);
+    dispatch(seteditUserData(agencyList?.websiteUsers[index]));
+  }
 
   return (
     <Row>
@@ -620,10 +629,14 @@ const Agency = () => {
 
         <Row>
           <Col md={24}>
-            <Table columns={websiteColumn} dataSource={webloadData} pagination={false}  />
+            <Table onRow={(record, rowIndex) => {
+              return {
+                onClick: event => { dispatch(showWebsiteUser(true));  getEventData(record, rowIndex) }
+              };
+            }} columns={websiteColumn} dataSource={webloadData} pagination={false}  />
           </Col>
           <Col md={24}>
-            <AddNewWebsite />
+            <AddNewWebsite onClick={() => { dispatch(showWebsiteUser(true)); }} />
           </Col>
         </Row>
 

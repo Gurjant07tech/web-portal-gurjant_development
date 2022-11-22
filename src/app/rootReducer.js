@@ -13,6 +13,7 @@ import SearchDataReducer from "features/caseload/searchSlice";
 import enrollWizardReducer from "features/enrollWizard/enrollWizardSlice";
 import participantProfileDataReducer from "features/caseload/participantProfileDataslice";
 import websiteLoadDataReducer from "features/agency/websiteUserSlice";
+import editLoadDataSlice from "features/agency/editUserSlice";
 
 export default combineReducers({
   /**Add more reducers here*/
@@ -29,5 +30,6 @@ export default combineReducers({
   searchData: SearchDataReducer,
   enrollWizardData: enrollWizardReducer,
   participantProfileData: participantProfileDataReducer,
-  websiteUserData: websiteLoadDataReducer
+  websiteUserData: websiteLoadDataReducer,
+  editUserData: editLoadDataSlice
 });

@@ -45,6 +45,9 @@ export const commonSlice = createSlice({
     },
     setButtonLoading: (state, action) => {
       state.buttonLoading = action.payload
+    },
+    showWebsiteUser: (state, action) => {
+      state.showWebModal = action.payload;
     }
   },
 });
@@ -63,7 +66,8 @@ export const {
   setSelectedEvents,
   setAssignedDevices,
   setHistoryStartDate,
-  setButtonLoading
+  setButtonLoading,
+  showWebsiteUser
 } = commonSlice.actions;
 
 export default commonSlice.reducer;
