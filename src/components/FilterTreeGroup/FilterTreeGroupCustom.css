@@ -1,0 +1,33 @@
+.anticon svg{
+      color: #0557a2;
+      font-size: 18px;
+}
+
+/* .ant-btn-primary, .ant-btn-primary:hover{ */
+      /* background-color: #fff;
+      border-left: none;
+      padding-top: 5px !important; */
+/* } */
+
+.ant-input-group{
+      border: 1px solid #0557a2;
+      border-radius: 6px;
+      margin-bottom: 10px;
+}
+
+.ant-input-group-wrapper{
+      width : 90%;
+}
+
+.ant-select-arrow svg{
+      color: #0557a2 !important;
+}
+
+/* .ant-select:not(.ant-select-customize-input) .ant-select-selector{
+      border: 1px solid #0557a2 !important;
+      border-radius: 5px;
+} */
+
+ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+      border-color: #c4c4c4;
+}

@@ -1,0 +1,64 @@
+.ant-form-item {
+  margin-bottom: 10px;
+}
+
+/* .ant-select-single .ant-select-selector .ant-select-selection-item,
+.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  line-height: 24px;
+} */
+
+.enrollParticipantWizard.ant-select-single .ant-select-selector .ant-select-selection-item,
+.enrollParticipantWizard.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  line-height: 32px;
+}
+
+.ant-form-horizontal .ant-form-item-label {
+  min-width: 200px;
+  text-align: left !important;
+}
+
+.enrollParticipantWizard .ant-select-selector {
+  height: 32px !important;
+}
+
+.historyDropdown .ant-select-selector {
+  height: 32px !important;
+}
+
+.historyDropdown .ant-select-selector .ant-select-selection-item {
+  line-height: 32px !important;
+}
+
+.enrollParticipantWizard
+  .ant-select-selector
+  .ant-select-selection-placeholder {
+  line-height: 32px;
+}
+
+.enrollParticipantWizard {
+  margin-right: 10px;
+  min-width: 250px !important;
+  max-width: 250px !important;
+}
+
+.ant-input-affix-wrapper {
+  height: 24px;
+}
+
+.antd-country-phone-input .ant-select {
+  min-width: 50px;
+}
+
+/* .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+  border: none !important;
+} */
+
+input:focus {
+  outline: none !important;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper:hover,
+.ant-input-affix-wrapper-focused {
+  box-shadow: none !important;
+}

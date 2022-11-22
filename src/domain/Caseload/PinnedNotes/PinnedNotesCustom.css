@@ -1,0 +1,37 @@
+.pinnedNotesModal .ant-modal-content .ant-modal-close{
+      display: none;
+}
+.pinnedNotesModal .ant-modal-content .ant-modal-header{
+     text-align: center;
+     border-bottom: 0;
+}
+.pinnedNotesModal .ant-modal-content .ant-modal-header .ant-modal-title{
+      font-weight: 800;
+      font-family: Aileron-Bold;
+}
+.pinnedNotesModal .ant-modal-content .ant-modal-footer{
+      border-top: 0;
+ }
+.pinnedNotesModal .ant-modal-content .ant-modal-footer .ant-btn:first-child{
+      float: left;
+      border: none;
+      font-family: Aileron-Regular;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 30px;
+      color: #000;
+}
+.pinnedNotesModal .ant-modal-content .ant-modal-footer .ant-btn.ant-btn-primary{
+      border: none;
+      font-family: Aileron-Regular;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      line-height: 30px;
+      color: #1890ff;
+      background: none;
+      border-color:none;
+      text-shadow: none;
+      box-shadow: none;
+}

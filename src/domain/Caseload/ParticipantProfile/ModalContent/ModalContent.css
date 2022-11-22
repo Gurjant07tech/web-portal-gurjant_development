@@ -1,0 +1,43 @@
+.ManageDataModal .ant-modal-body{
+      padding: 24px 30px;
+}
+
+.ManageDataModal .ant-modal-content{
+      border-radius: 7px;
+}
+
+.ManageDataModal .ant-modal-header{
+      border-bottom: none;
+      border-radius: 7px;
+}
+
+.ManageDataModal .ant-modal-header .ant-modal-title{
+      font-weight: 800;
+      font-family: Aileron-Bold;
+}
+
+.ManageDataModal .ant-modal-footer{
+      border-top: none;
+      display: none;
+}
+
+.ManageDataModal .ant-modal-body .ant-select, .ManageDataModal .ant-modal-body Input{
+      width: 65%; 
+      margin-bottom: 20px;
+}
+
+.ManageDataModal .ant-modal-body .ant-select .ant-select-selector{
+      height: 32px !important;
+      border-radius: 0 !important;
+      border: 1px solid #d9d9d9 !important;
+      padding: 5px 11px !important;
+}
+
+.ManageDataModal .ant-modal-body .ant-select .ant-select-selector .ant-select-arrow svg {
+      color: #bfbfbf !important;
+}
+
+.ManageDataModal .ant-modal-body .ant-collapse-content .ant-collapse-content-box .ant-select{
+      width: 90%;
+      margin: 10px;
+}
