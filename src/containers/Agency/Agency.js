@@ -208,19 +208,19 @@ const Agency = () => {
 
   const getContactList = async (agencyId) => {
     apiHandler({
-      url: `${endpoint.AVAILABLE_CONTACTS}/${agencyId}`,
+      url: `${endpoint.AVAILABLE_EVENT_TYPES}`,
       authToken,
     }).then((result) => {
-      if(result){
-        if(result?.data.length > 0){
-          setContact(  result.data.map((row,i) =>({
-            key: (i+1),
-            name: row.firstName +" "+row.lastName,
-            preferred: row.email,
-            role: row.role,
-          })));
-        }
-      }
+      // if(result){
+      //   if(result?.data.length > 0){
+      //     setContact(  result.data.map((row,i) =>({
+      //       key: (i+1),
+      //       name: row.firstName +" "+row.lastName,
+      //       preferred: row.email,
+      //       role: row.role,
+      //     })));
+      //   }
+      // }
     });
   }
 
